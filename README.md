@@ -9,5 +9,6 @@ sudo apt-get update && sudo apt-get install cmake libopenmpi-dev python3-dev zli
 
 git clone https://github.com/hill-a/stable-baselines && cd stable-baselines
 
-conda activate ./envs
+pip install -e .  
+
 
