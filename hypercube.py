@@ -15,11 +15,9 @@ class Hypercube:
     def getRawSamples(self, criterion='m'): # Other options = c, cm, corr
         return lhs(self.num_params, self.num_samples, criterion=criterion)
 
-    def getSamples(self, params):
+    def getSamples(self, params, numSamples=5):
         self.num_params = len(params)
-        self.num_samples = 0
-        for p in params:
-            self.num_samples = max(self.num_samples, p.samples)
+        self.num_samples = numSamples
 
         rawSamples = self.getRawSamples()
         outSamples = []
