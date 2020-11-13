@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from parameter import *
-from sampler import *
+from hypercube import *
 
 
 ### Define Hyperparameter Options ###
@@ -20,8 +20,7 @@ conv_param      = Parameter(convNet, categ=True)
 parameter_set   = [lr_param, funct_param, layers_param, nodes_param, conv_param]
 
 ### Create Sample set from parameters
-lhc         = Sampler()
-lhc.method  = 'grid'
+lhc         = Hypercube()
 ps          = lhc.getSamples(parameter_set, 10)
 
 print(ps)
