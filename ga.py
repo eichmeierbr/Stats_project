@@ -1,4 +1,6 @@
 import numpy as np
+from sampler import *
+from parameter import *
 
 
 class GA(object):
@@ -14,7 +16,12 @@ class GA(object):
         ##Sampler would go here 
         self.range_low = 0
         self.range_high = 100    
-        self.population = np.random.uniform(low=self.range_low, high=self.range_high, size=self.pop_size)
+        params = []
+        for i in range(self.num_params):
+            params.append(Parameter([self.range_low, self.range_high]))
+        lhc = Sampler(num_params, population_size)
+
+        self.population = np.array(lhc.getSamples(params, population_size, method='random'))
 
     ##THIS function will interact will get loss from leaner
     def calculate_loss(self):

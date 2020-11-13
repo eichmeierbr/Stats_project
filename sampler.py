@@ -9,9 +9,9 @@ from parameter import *
 from pyDOE import lhs
 
 class Sampler:
-    def __init__(self):
-        self.num_params = 2
-        self.num_samples = 9
+    def __init__(self, params=2, samples=9):
+        self.num_params = params
+        self.num_samples = samples
         self.method = 'lhs'
         self.params = []
 
@@ -44,51 +44,37 @@ class Sampler:
         else:
             return self.getSamplesRandom()
 
-    def getSamples(self, params, numSamples=5, method='lhs'):
+    def getSamples(self, params, numSamples=5, numParams=9, method='lhs', useParams=True):
         self.num_params = len(params)
         self.params = params
         self.num_samples = numSamples
 
         rawSamples = self.getRawSamples()
-        outSamples = []
 
+        if not useParams: 
+            return rawSamples
+            
+        outSamples = []
         for i in range(self.num_samples):
             thisSet = []
             for j in range(self.num_params):
-                thisSet.append( self.convertValueToParameter(params[j], rawSamples[i,j]) )
+                thisSet.append( params[j].convertValueToParameter(rawSamples[i,j]) )
             outSamples.append(thisSet)
 
         return outSamples
-
-
-    def convertValueToParameter(self, param, sample):
-        if param.categorical:
-            sample *= param.samples
-            return param.options[int(sample)]
-
-        if param.linear:
-            minVal = param.options[0]
-            maxVal = param.options[1]
-            val = minVal + sample * (maxVal-minVal)
-            return val
-        else:
-            minVal = np.log(param.options[0])
-            maxVal = np.log(param.options[1])
-            val = np.exp(minVal + sample * (maxVal-minVal))
-            return val
 
 
 if __name__ == "__main__":
     param = Parameter([0,1], 0.5)
 
     methods = ['random','lhs','grid']
+    lhc = Sampler()
     for meth in methods:
-        lhc = Sampler()
         lhc.method = meth
         lhd = lhc.getRawSamples()
         xs = lhd[:,0]
         ys = lhd[:,1]
-    
+
         plt.title(lhc.method)
-        plt.scatter(xs, ys)
+        plt.scatter(xs,ys)
         plt.show()
