@@ -44,7 +44,7 @@ class Sampler:
         elif self.method == 'random':
             return self.getSamplesRandom()
 
-    def getSamples(self, params, numSamples=5, numParams=9, method='lhs', useParams=True):
+    def getSamples(self, params, numSamples=5, numParams=9, useParams=True):
         self.num_params = len(params)
         self.params = params
         self.num_samples = numSamples

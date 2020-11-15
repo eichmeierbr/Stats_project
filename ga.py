@@ -19,9 +19,9 @@ class GA(object):
         params = []
         for i in range(self.num_params):
             params.append(Parameter([self.range_low, self.range_high]))
-        lhc = Sampler('lhs',num_params, population_size)
+        lhc = Sampler('random',num_params, population_size)
 
-        self.population = np.array(lhc.getSamples(params, population_size, method='random'))
+        self.population = np.array(lhc.getSamples(params, population_size))
 
     ##THIS function will interact will get loss from leaner
     def calculate_loss(self):

@@ -29,22 +29,23 @@ class GA_CAR_POLE(GA):
         print(self.population)
         for i in range(self.population.shape[0]):
             env = gym.make('CartPole-v1')
+            env.seed(0)
             model = PPO2(MlpPolicy, env, verbose=0)
             model.n_steps=128
             model.ent_coef = 0.01
-            print(self.population.shape)
-            print("#########################",self.population[i,:][0] )
-            model.learning_rate = self.population[i,:][0] 
-            model.vf_coef = 0.5
-            model.max_grad_norm = 0.5
-            model.lam = 0.95
+            model.learning_rate = 0.00025
+            model.vf_coef = self.population[i,:][0]
+            model.max_grad_norm = self.population[i,:][1]
+            model.lam = self.population[i,:][2]
             model.nminibatches = 4
             model.noptepochs = 4
             model.cliprange = 0.2
-            model.gamma = 0.99
+            model.gamma = self.population[i,:][3]
+            model.seed = 0
+            model.n_cpu_tf_sess = 1
 
 
-            model.learn(total_timesteps=10000)
+            model.learn(total_timesteps=1000)
 
             obs = env.reset()
             total_reward = 0
