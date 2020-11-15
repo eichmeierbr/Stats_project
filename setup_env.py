@@ -33,11 +33,16 @@ model.cliprange = 0.2
 model.learn(total_timesteps=10000)
 
 obs = env.reset()
-for i in range(1000):
+total_reward = 0
+game_time = 500
+for i in range(game_time):
     action, _states = model.predict(obs)
     obs, rewards, dones, info = env.step(action)
-    print(rewards)
-    env.render()
-    time.sleep(.100)
+    total_reward += rewards
+    # env.render()
+    # time.sleep(.100)
 
+print(total_reward)
+loss = game_time - total_reward
+print(loss)
 env.close()

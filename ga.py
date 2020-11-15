@@ -4,7 +4,7 @@ from parameter import *
 
 
 class GA(object):
-    def __init__(self,population_size,num_params,num_parents,num_mutations):
+    def __init__(self,population_size,num_params,num_parents,num_mutations,range_low, range_high):
         self.pop_size = (population_size,num_params)
         self.num_params = num_params
         self.num_parents = num_parents
@@ -14,12 +14,12 @@ class GA(object):
 
 
         ##Sampler would go here 
-        self.range_low = 0
-        self.range_high = 100    
+        self.range_low = range_low
+        self.range_high = range_high    
         params = []
         for i in range(self.num_params):
             params.append(Parameter([self.range_low, self.range_high]))
-        lhc = Sampler(num_params, population_size)
+        lhc = Sampler('lhs',num_params, population_size)
 
         self.population = np.array(lhc.getSamples(params, population_size, method='random'))
 
@@ -65,10 +65,10 @@ class GA(object):
                 offspring_crossover[offspring,random_index] = random_val
         return offspring_crossover
 
-    def get_best_DNA(self):
-        loss = self.calculate_loss()
+    def get_best_DNA(self,loss):
         best_loss = np.min(loss)
-        best_gene = np.argmin(loss)
+        best_gene_idx = np.argmin(loss)
+        best_gene = self.population[best_gene_idx,:]
         return best_loss, best_gene
 
     def get_next_gen(self,generation):
@@ -80,5 +80,5 @@ class GA(object):
         offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
         self.offspring_mutation = self.mutation(offspring_crossover)
 
-        best_loss, best_gene =  self.get_best_DNA()
+        best_loss, best_gene =  self.get_best_DNA(loss)
         return best_loss, best_gene
