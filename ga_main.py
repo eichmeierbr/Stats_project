@@ -41,7 +41,6 @@ for generation in range(num_generations):
 
 
 
-<<<<<<< HEAD
 
 ##########Test GA cartpole
 range_low = 0.00001
@@ -63,8 +62,6 @@ for generation in range(num_generations):
 
 
 
-=======
->>>>>>> afc1e4b99b6d7efd04278039c015ca34e9c45434
 import matplotlib.pyplot
 matplotlib.pyplot.plot(best_outputs)
 matplotlib.pyplot.xlabel("Generation")

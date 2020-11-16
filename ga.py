@@ -80,33 +80,37 @@ class GA(object):
         best_gene = self.population[best_gene_idx,:]
         return best_loss, best_gene
 
-    def get_next_gen(self,generation):
+    def get_next_gen(self,generation, mode = "deterministic"):
         # print(self.parents)
         # print(self.population)
         
 
         # if generation>0:
+    
+        if mode == "deterministic":
+            loss = self.calculate_loss()
+
+            if generation>0:
+                loss = np.append(loss,self.loss_o_parents,axis=0)
+                self.population = np.append(self.population,self.parents,axis=0)
+            self.best_loss, best_gene =  self.get_best_DNA(loss)
+
+            self.parents , self.loss_o_parents = self.select_parents(loss)
+            offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
+            self.offspring_mutation = self.mutation(offspring_crossover)
+            self.population = self.offspring_mutation
 
             
+        else:
+            loss = self.calculate_loss()
+            self.best_loss, best_gene =  self.get_best_DNA(loss)
 
-        
-        loss = self.calculate_loss()
+            self.parents , self.loss_o_parents = self.select_parents(loss)
+            offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
+            self.offspring_mutation = self.mutation(offspring_crossover)
+            self.population[0:self.parents.shape[0], :] = self.parents
+            self.population[self.parents.shape[0]:, :] = self.offspring_mutation
 
-        if generation>0:
-            loss = np.append(loss,self.loss_o_parents,axis=0)
-            self.population = np.append(self.population,self.parents,axis=0)
-            # print(self.population)
-        self.best_loss, best_gene =  self.get_best_DNA(loss)
 
-        
-
-        self.parents,self.loss_o_parents = self.select_parents(loss)
-        offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
-        self.offspring_mutation = self.mutation(offspring_crossover)
-
-        
-        # self.population[0:self.parents.shape[0], :] = self.parents
-        # self.population[self.parents.shape[0]:, :] = self.offspring_mutation
-        self.population = self.offspring_mutation
         # print("best loss: ", best_loss)
         return self.best_loss, best_gene
