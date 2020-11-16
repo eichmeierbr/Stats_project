@@ -16,12 +16,15 @@ class Sampler:
         self.params = []
 
     def getSamplesLHS(self, criterion='m'): # Other options = c, cm, corr
+        print("lhs")
         return lhs(self.num_params, self.num_samples, criterion=criterion)
 
     def getSamplesRandom(self):
+        print("random")
         return np.random.uniform(0,1, (self.num_samples, self.num_params))
 
     def getSamplesGrid(self):
+        print("grid")
         p_copy = self.params[:]
         ls = []
         if not p_copy:
