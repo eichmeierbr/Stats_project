@@ -30,7 +30,6 @@ class GA_CAR_POLE(GA):
         
         #loop through the population
         avg_num = 1
-        # print(self.population)
         for i in range(self.population.shape[0]):
             curr_loss = 0
             for k in range(avg_num):
@@ -60,14 +59,15 @@ class GA_CAR_POLE(GA):
                     action, _states = model.predict(obs)
                     obs, rewards, dones, info = env.step(action)
                     total_reward += rewards
+                    if dones:
+                        break
                     # env.render()
                     # time.sleep(.100)
 
-                # print(-total_reward)
                 curr_loss = curr_loss + game_time - total_reward
                 env.close()
             loss = np.append(loss, curr_loss/avg_num)
-            
+        
         return loss
 
 
