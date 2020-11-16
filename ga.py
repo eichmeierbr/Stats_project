@@ -23,7 +23,13 @@ class GA(object):
 
         self.population = np.array(lhc.getSamples(params, population_size, method='random'))
 
-    
+    ##THIS function will interact will get loss from leaner
+    def calculate_loss(self):
+        # this is for my simple tests, definitly needs to be improved
+        arr = np.tile(np.array([1,10,20,30,40,50,60,70,80,90]), (self.population.shape[0], 1))
+        val = self.population-arr
+        loss = np.linalg.norm(val,axis=1)
+        return loss
 
     def select_parents(self, loss):
         parents = np.empty((self.num_parents, self.population.shape[1]))
@@ -56,7 +62,6 @@ class GA(object):
     def mutation(self, offspring_crossover):
         for offspring in range(offspring_crossover.shape[0]):
             for i in range(self.num_mutations):
-                print(i)
                 random_index = np.random.randint(0, offspring_crossover.shape[1], 1)
                 rand = np.random.uniform(0, 1, 1)
                 if rand>.5:
@@ -64,7 +69,6 @@ class GA(object):
                 else:
                     random_val = np.random.uniform(self.parents[0][random_index], self.range_high, 1)
 
-                print(random_index," ",random_val)
                 # random_val = max(0,min(np.random.normal(self.parents[random_index], self.range_high*.5, 1),1))
 
                 # random_val = np.max(random_val,self.range_low)
@@ -80,7 +84,7 @@ class GA(object):
         best_gene = self.population[best_gene_idx,:]
         return best_loss, best_gene
 
-    def get_next_gen(self,generation, mode = "deterministic"):
+    def get_next_gen(self,generation, mode = "non-deterministic"):
         # print(self.parents)
         # print(self.population)
         
