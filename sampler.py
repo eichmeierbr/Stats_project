@@ -9,10 +9,10 @@ from parameter import *
 from pyDOE import lhs
 
 class Sampler:
-    def __init__(self,method, params=2, samples=9):
+    def __init__(self, params=2, samples=9):
         self.num_params = params
         self.num_samples = samples
-        self.method = method
+        self.method = 'lhs'
         self.params = []
 
     def getSamplesLHS(self, criterion='m'): # Other options = c, cm, corr
@@ -44,7 +44,7 @@ class Sampler:
             return self.getSamplesLHS()
         elif self.method == 'grid':
             return self.getSamplesGrid()
-        elif self.method == 'random':
+        else:
             return self.getSamplesRandom()
 
     def getSamples(self, params, numSamples=5, numParams=9, method='lhs', useParams=True):
