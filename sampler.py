@@ -4,6 +4,7 @@ import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
+from sklearn.cluster import KMeans
 from parameter import *
 
 from pyDOE import lhs
@@ -25,18 +26,18 @@ class Sampler:
 
     def getSamplesGrid(self):
         print("grid")
-        p_copy = self.params[:]
+        n_pts = self.num_samples
+        n_dims = self.num_params
+        sim_pts = 7000
+
         ls = []
-        if not p_copy:
-            for i in range(self.num_params):
-                ls.append(np.linspace(0,1,int(np.sqrt(self.num_samples))))
-        else:
-            for i in range(len(p_copy)):
-                ls.append(np.linspace(0,1,p_copy[i].samples))
-        l = list(itertools.product(*ls))
-        for i in range(len(l)):
-            l[i] = list(l[i])
-        return np.array(l)
+        for i in range(n_dims):
+            ls.append(np.linspace(0,1,int(np.round(np.power(sim_pts,1/float(n_dims)),0))))
+        sim_pts = list(itertools.product(*ls))
+
+
+        l = KMeans(n_pts).fit(sim_pts).cluster_centers_
+        return l
 
 
     def getRawSamples(self):

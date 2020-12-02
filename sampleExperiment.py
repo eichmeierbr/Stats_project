@@ -3,9 +3,12 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial import Voronoi, voronoi_plot_2d, ConvexHull
 from scipy import stats
+from sklearn.cluster import KMeans
 from sampler import *
+import itertools
 
 
 def voronoi_volumes(points, v):
@@ -22,7 +25,11 @@ def voronoi_volumes(points, v):
 if __name__ == "__main__":
 
     methods = ['random','lhs','grid']
-    lhc = Sampler()
+    n_pts =10
+    n_dims = 2
+    sim_pts = 7000
+    lhc = Sampler(params=n_dims, samples=n_pts)
+
     for meth in methods:
         lhc.method = meth
         lhd = lhc.getRawSamples()
@@ -48,3 +55,21 @@ if __name__ == "__main__":
         fig = voronoi_plot_2d(vor)
         plt.title(lhc.method)
         plt.show()
+
+
+    # ls = []
+    # for i in range(n_dims):
+    #     ls.append(np.linspace(0,1,int(np.round(np.power(sim_pts,1/float(n_dims)),0))))
+    # sim_pts = list(itertools.product(*ls))
+
+
+    # samples = KMeans(n_pts).fit(sim_pts).cluster_centers_
+
+    # if n_dims == 2:
+    #     plt.scatter(samples[:,0], samples[:,1])
+
+    # elif n_dims == 3:
+    #     fig = plt.figure()
+    #     ax = fig.add_subplot(111, projection='3d')
+    #     ax.scatter(samples[:,0], samples[:,1], samples[:,2])
+    # plt.show()
