@@ -9,6 +9,7 @@ class GA(object):
         self.num_params = num_params
         self.num_parents = num_parents
         self.num_mutations = num_mutations
+        self.loss_history = []
         # self.parents = []
         # self.offspring_mutation = None
 
@@ -106,6 +107,7 @@ class GA(object):
             
         else:
             loss = self.calculate_loss()
+            self.store_losses(loss)
             self.best_loss, best_gene =  self.get_best_DNA(loss)
 
             self.parents , self.loss_o_parents = self.select_parents(loss)
@@ -117,3 +119,27 @@ class GA(object):
 
         # print("best loss: ", best_loss)
         return self.best_loss, best_gene
+
+
+    def store_losses(self, losses):
+        for loss in losses:
+            for sample in self.population:
+                if len(self.loss_history) == 0: 
+                    for val in sample:
+                        self.loss_history.append([[val, loss]])
+                else:
+                    for i in range(len(sample)):
+                        self.loss_history[i].append([sample[i], loss])
+
+                        
+        # if len(self.loss_history) == 0:
+            # for pair in zip(loss, self.population):
+                # self.loss_history.append([pair])
+        # else:
+            # idx = 0
+            # for pair in zip(loss, self.population):
+                # self.loss_history[i].append(pair)
+                # idx +=1
+
+
+        a=3
