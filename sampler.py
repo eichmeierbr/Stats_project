@@ -4,36 +4,40 @@ import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
+from sklearn.cluster import KMeans
 from parameter import *
 
 from pyDOE import lhs
 
 class Sampler:
-    def __init__(self, params=2, samples=9):
+    def __init__(self, method = 'lhc', params=2, samples=9):
         self.num_params = params
         self.num_samples = samples
-        self.method = 'lhs'
+        self.method = method
         self.params = []
 
     def getSamplesLHS(self, criterion='m'): # Other options = c, cm, corr
+        print("lhs")
         return lhs(self.num_params, self.num_samples, criterion=criterion)
 
     def getSamplesRandom(self):
+        print("random")
         return np.random.uniform(0,1, (self.num_samples, self.num_params))
 
     def getSamplesGrid(self):
-        p_copy = self.params[:]
+        print("grid")
+        n_pts = self.num_samples
+        n_dims = self.num_params
+        sim_pts = 12000
+
         ls = []
-        if not p_copy:
-            for i in range(self.num_params):
-                ls.append(np.linspace(0,1,int(np.sqrt(self.num_samples))))
-        else:
-            for i in range(len(p_copy)):
-                ls.append(np.linspace(0,1,p_copy[i].samples))
-        l = list(itertools.product(*ls))
-        for i in range(len(l)):
-            l[i] = list(l[i])
-        return np.array(l)
+        for i in range(n_dims):
+            ls.append(np.linspace(0,1,int(np.round(np.power(sim_pts,1/float(n_dims)),0))))
+        sim_pts = list(itertools.product(*ls))
+
+
+        l = KMeans(n_pts).fit(sim_pts).cluster_centers_
+        return l
 
 
     def getRawSamples(self):
@@ -44,7 +48,7 @@ class Sampler:
         else:
             return self.getSamplesRandom()
 
-    def getSamples(self, params, numSamples=5, numParams=9, method='lhs', useParams=True):
+    def getSamples(self, params, numSamples=5, numParams=9, useParams=True):
         self.num_params = len(params)
         self.params = params
         self.num_samples = numSamples
