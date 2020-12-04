@@ -29,3 +29,6 @@ class Parameter:
             maxVal = np.log(self.options[1])
             val = np.exp(minVal + sample * (maxVal-minVal))
             return val
+
+    def setValueFromSample(self,sample):
+        self.value = self.convertValueToParameter(sample)
