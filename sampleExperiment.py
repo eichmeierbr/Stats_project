@@ -25,36 +25,43 @@ def voronoi_volumes(points, v):
 if __name__ == "__main__":
 
     methods = ['random','lhs','grid']
+    samps = [5,9,12,17,25]
     n_pts =10
     n_dims = 2
-    sim_pts = 7000
+    sim_pts = 12000
     lhc = Sampler(params=n_dims, samples=n_pts)
 
-    for meth in methods:
-        lhc.method = meth
+    # for meth in methods:
+    for num in samps:
+        lhc.num_samples = num
+        lhc.method = 'grid'
         lhd = lhc.getRawSamples()
         xs = lhd[:,0]
         ys = lhd[:,1]
 
-        dists = []
-        for i in range(len(lhd)):
-            for j in range(i+1,len(lhd)):
-                dists.append(np.linalg.norm(lhd[i]-lhd[j]))
-        vals = stats.kstest(lhd[:,0], 'norm')
-        # vals = stats.chisquare(lhd[:,0])
-
-        vor = Voronoi(lhd)
-        vols = voronoi_volumes(lhd,vor)
-       
-        print(lhc.method)
-        print(vals)
-        print('Median Dist: %f' %(np.median(dists)))
-        print('Mean Dist: %f' %(np.mean(dists)))
-        print('Dev Dist: %f' %(np.std(dists)))
-        # plt.scatter(xs, ys)
-        fig = voronoi_plot_2d(vor)
-        plt.title(lhc.method)
+        plt.title('Num Samples %i' %(num))
+        plt.scatter(xs, ys)
         plt.show()
+
+        # dists = []
+        # for i in range(len(lhd)):
+        #     for j in range(i+1,len(lhd)):
+        #         dists.append(np.linalg.norm(lhd[i]-lhd[j]))
+        # vals = stats.kstest(lhd[:,0], 'norm')
+        # # vals = stats.chisquare(lhd[:,0])
+
+        # vor = Voronoi(lhd)
+        # vols = voronoi_volumes(lhd,vor)
+       
+        # print(lhc.method)
+        # print(vals)
+        # print('Median Dist: %f' %(np.median(dists)))
+        # print('Mean Dist: %f' %(np.mean(dists)))
+        # print('Dev Dist: %f' %(np.std(dists)))
+        # # plt.scatter(xs, ys)
+        # fig = voronoi_plot_2d(vor)
+        # plt.title(lhc.method)
+        # plt.show()
 
 
     # ls = []

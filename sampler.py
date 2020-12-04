@@ -28,7 +28,7 @@ class Sampler:
         print("grid")
         n_pts = self.num_samples
         n_dims = self.num_params
-        sim_pts = 7000
+        sim_pts = 12000
 
         ls = []
         for i in range(n_dims):
