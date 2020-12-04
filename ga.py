@@ -140,6 +140,3 @@ class GA(object):
             # for pair in zip(loss, self.population):
                 # self.loss_history[i].append(pair)
                 # idx +=1
-
-
-        a=3
