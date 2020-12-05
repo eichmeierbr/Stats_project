@@ -4,33 +4,45 @@ from parameter import *
 
 
 class GA(object):
-    def __init__(self,population_size,num_params,num_parents,num_mutations,range_low, range_high):
-        self.pop_size = (population_size,num_params)
-        self.num_params = num_params
+    def __init__(self,population_size, parameters,num_parents,num_mutations, loss_func):
+        self.num_params = len(parameters)
+        self.pop_size = (population_size,self.num_params)
         self.num_parents = num_parents
         self.num_mutations = num_mutations
         self.loss_history = []
+        self.loss_function = loss_func
         # self.parents = []
         # self.offspring_mutation = None
 
 
         ##Sampler would go here 
-        self.range_low = range_low
-        self.range_high = range_high    
-        params = []
-        for i in range(self.num_params):
-            params.append(Parameter([self.range_low, self.range_high]))
-        lhc = Sampler('lhc', num_params, population_size)
+        self.range_low = 0
+        self.range_high = 1    
+        self.params = parameters
+        lhc = Sampler('lhc', self.num_params, population_size)
 
-        self.population = np.array(lhc.getSamples(params, population_size))
+        # self.population = np.array(lhc.getSamples(self.params, population_size))
+        self.population = np.array(lhc.getRawSamples())
 
     ##THIS function will interact will get loss from leaner
     def calculate_loss(self):
-        # this is for my simple tests, definitly needs to be improved
-        arr = np.tile(np.array([1,10,20,30,40,50,60,70,80,90]), (self.population.shape[0], 1))
-        val = self.population-arr
-        loss = np.linalg.norm(val,axis=1)
+        loss = np.array([])
+
+        avg_num = 1
+        for i in range(self.population.shape[0]):
+            curr_loss = 0
+            params = self.params[:]
+
+            for j in range(len(params)):
+                params[j].setValueFromSample(self.population[i,j])
+
+            for k in range(avg_num):
+                curr_loss += self.loss_function(params)
+            loss = np.append(loss, curr_loss/avg_num)
+
         return loss
+    
+
 
     def select_parents(self, loss):
         parents = np.empty((self.num_parents, self.population.shape[1]))
@@ -90,34 +102,28 @@ class GA(object):
         
 
         # if generation>0:
+        loss = self.calculate_loss()
+        self.store_losses(loss)
     
         if mode == "deterministic":
-            loss = self.calculate_loss()
 
             if generation>0:
                 loss = np.append(loss,self.loss_o_parents,axis=0)
                 self.population = np.append(self.population,self.parents,axis=0)
-            self.best_loss, best_gene =  self.get_best_DNA(loss)
 
-            self.parents , self.loss_o_parents = self.select_parents(loss)
-            offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
-            self.offspring_mutation = self.mutation(offspring_crossover)
+        self.best_loss, best_gene =  self.get_best_DNA(loss)
+        self.parents , self.loss_o_parents = self.select_parents(loss)
+        offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
+        self.offspring_mutation = self.mutation(offspring_crossover)
+        
+        
+        if mode == 'deterministic':
             self.population = self.offspring_mutation
-
-            
         else:
-            loss = self.calculate_loss()
-            self.store_losses(loss)
-            self.best_loss, best_gene =  self.get_best_DNA(loss)
 
-            self.parents , self.loss_o_parents = self.select_parents(loss)
-            offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
-            self.offspring_mutation = self.mutation(offspring_crossover)
             self.population[0:self.parents.shape[0], :] = self.parents
             self.population[self.parents.shape[0]:, :] = self.offspring_mutation
 
-
-        # print("best loss: ", best_loss)
         return self.best_loss, best_gene
 
 
@@ -131,12 +137,61 @@ class GA(object):
                     for i in range(len(sample)):
                         self.loss_history[i].append([sample[i], loss])
 
-                        
-        # if len(self.loss_history) == 0:
-            # for pair in zip(loss, self.population):
-                # self.loss_history.append([pair])
-        # else:
-            # idx = 0
-            # for pair in zip(loss, self.population):
-                # self.loss_history[i].append(pair)
-                # idx +=1
+
+    def Big_Funct(self, num_generations=20, show_stats=False):
+        best_outputs = []
+        self.loss_history = []
+        for generation in range(num_generations):
+            best_loss, best_gene = self.get_next_gen(generation)
+            best_gene_params = []
+            for i in range(len(best_gene)):
+                self.params[i].setValueFromSample(best_gene[i])
+                best_gene_params.append(self.params[i].value)
+
+            if show_stats:
+                print("Generation", generation)
+                print("best loss", best_loss)
+                print("best gene", best_gene_params)
+                best_outputs.append(best_loss)
+
+        if show_stats:
+            self.plotLossCurve(best_outputs)
+            self.plotTrainingHistograms()
+        return self.params
+
+
+    def plotLossCurve(self, best_outputs):
+        plt.plot(best_outputs)
+        plt.xlabel("Generation")
+        plt.ylabel("Loss")
+        plt.title("Cart Pole (random sampling)")
+        plt.show()        
+
+
+    def plotTrainingHistograms(self):
+        # Plot Histograms
+        a = np.array(self.loss_history)
+        for i in range(len(a)):
+            for j in range(len(a[0])):
+                a[i,j] = self.params[i].convertValueToParameter(a[i,j])
+
+        # for i in range(len(a)):
+            # a[i] = np.sort(a[i])
+
+        for i in range(len(a)):
+            fig, ax = plt.subplots()
+            # ax.set_aspect("equal")
+            hist, xbins, ybins, im = ax.hist2d(a[i,:,0], a[i,:,1], bins=20)
+            # for k in range(len(ybins)-1):
+                # for j in range(len(xbins)-1):
+                    # ax.text(xbins[j]+0.04, ybins[k]+1, hist.T[k,j], 
+                            # color="w", ha="center", va="center", fontweight="bold")
+            # ax.xlabel('Parameter Value')
+            # ax.ylabel('Loss')
+            plt.show()
+
+            plt.scatter(a[i,:,0], a[i,:,1])
+            plt.xlabel('Parameter Value')
+            plt.ylabel('Loss')
+
+            plt.show()
