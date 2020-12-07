@@ -13,7 +13,7 @@ population_size = 10
 for i in range(population_size): params.append(copy.copy(param))
 num_parents = 4
 num_mutations = 1
-GA_agent = GA(population_size,params,num_parents,num_mutations, test_loss)
+GA_agent = GA(population_size,params,num_parents,num_mutations, test_loss, approx_rate=5)
 best = GA_agent.Big_Funct(num_generations, show_stats=True)
 
 
@@ -47,5 +47,5 @@ best = GA_agent.Big_Funct(num_generations, show_stats=True)
 # population_size = 10
 # num_parents = 4
 # num_mutations = 1
-# GA_agent = GA(population_size,params,num_parents,num_mutations, cartPoleLoss)
+# GA_agent = GA(population_size,params,num_parents,num_mutations, cartPoleLoss, approx_rate=3)
 # best = GA_agent.Big_Funct(num_generations, show_stats=True)
