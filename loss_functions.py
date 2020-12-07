@@ -1,9 +1,10 @@
 
 import sys
 # sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages') # in order to import cv2 under python3
-import cv2
+# import cv2
 # sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages') 
 import gym
+
 
 from stable_baselines.common.policies import MlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv

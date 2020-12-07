@@ -74,8 +74,8 @@ X_train = np.array(X_train)
 Y_train = np.array(Y_train)
 X_test = np.array(X_test)
 
-clf = MLPRegressor(hidden_layer_sizes=(100,100),activation='relu', max_iter=5, alpha=0.001,
-                     solver='sgd', learning_rate='adaptive', verbose=1,  random_state=9)
+clf = MLPRegressor(hidden_layer_sizes=(100,100),activation='relu', max_iter=3, alpha=0.001,
+                     solver='lbfgs', learning_rate='adaptive', verbose=1,  random_state=9)
 
 clf.fit(X_train.astype('float'), Y_train.astype('float64').ravel())
 Y_test = clf.predict(X_test.astype('float'))
