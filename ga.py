@@ -2,9 +2,15 @@ import numpy as np
 from sampler import *
 from parameter import *
 
+def tempLearnerFunc(params):
+    return 3
+
+def tempTrainApproximator(X, Y):
+    return
+
 
 class GA(object):
-    def __init__(self,population_size, parameters,num_parents,num_mutations, loss_func):
+    def __init__(self,population_size, parameters,num_parents,num_mutations, loss_func, approx_rate=0, method='grid'):
         self.num_params = len(parameters)
         self.pop_size = (population_size,self.num_params)
         self.num_parents = num_parents
@@ -14,19 +20,35 @@ class GA(object):
         # self.parents = []
         # self.offspring_mutation = None
 
+        # Simulated Loss Function
+        self.approx_rate = approx_rate
+        self.approx_count = 0
+        self.want_approx = approx_rate > 0
 
         ##Sampler would go here 
         self.range_low = 0
         self.range_high = 1    
         self.params = parameters
-        lhc = Sampler('lhc', self.num_params, population_size)
+        lhc = Sampler(method, self.num_params, population_size)
 
         # self.population = np.array(lhc.getSamples(self.params, population_size))
         self.population = np.array(lhc.getRawSamples())
+        self.pop_hist = np.array([])
 
     ##THIS function will interact will get loss from leaner
     def calculate_loss(self):
         loss = np.array([])
+
+        # Select desired loss function
+        lossFunc = self.loss_function
+        approximatedLoss = False
+        if self.want_approx:
+            self.approx_count+=1
+            if self.approx_count == self.approx_rate:
+                self.approx_count = 0
+                lossFunc = tempLearnerFunc ########### Replace this as desired
+                approximatedLoss = True
+
 
         avg_num = 1
         for i in range(self.population.shape[0]):
@@ -37,8 +59,14 @@ class GA(object):
                 params[j].setValueFromSample(self.population[i,j])
 
             for k in range(avg_num):
-                curr_loss += self.loss_function(params)
+                curr_loss += lossFunc(params)
             loss = np.append(loss, curr_loss/avg_num)
+
+        if approximatedLoss:
+            # Setup loss storing or training
+            X = self.population
+            Y = loss
+            tempTrainApproximator(X, Y)
 
         return loss
     
@@ -142,6 +170,8 @@ class GA(object):
         best_outputs = []
         self.loss_history = []
         for generation in range(num_generations):
+            # if show_stats:
+                # self.plotPopulation()
             best_loss, best_gene = self.get_next_gen(generation)
             best_gene_params = []
             for i in range(len(best_gene)):
@@ -164,7 +194,7 @@ class GA(object):
         plt.plot(best_outputs)
         plt.xlabel("Generation")
         plt.ylabel("Loss")
-        plt.title("Cart Pole (random sampling)")
+        plt.title("Number Guessing (LHC Sampling)")
         plt.show()        
 
 
@@ -181,13 +211,13 @@ class GA(object):
         for i in range(len(a)):
             fig, ax = plt.subplots()
             # ax.set_aspect("equal")
-            hist, xbins, ybins, im = ax.hist2d(a[i,:,0], a[i,:,1], bins=20)
+            hist, xbins, ybins, im = ax.hist2d(a[i,:,0], a[i,:,1], bins=10)
             # for k in range(len(ybins)-1):
-                # for j in range(len(xbins)-1):
+            #     for j in range(len(xbins)-1):
                     # ax.text(xbins[j]+0.04, ybins[k]+1, hist.T[k,j], 
                             # color="w", ha="center", va="center", fontweight="bold")
-            # ax.xlabel('Parameter Value')
-            # ax.ylabel('Loss')
+            ax.set_xlabel('Parameter Value')
+            ax.set_ylabel('Loss')
             plt.show()
 
             plt.scatter(a[i,:,0], a[i,:,1])
@@ -195,3 +225,14 @@ class GA(object):
             plt.ylabel('Loss')
 
             plt.show()
+
+    def plotPopulation(self):
+        if len(self.pop_hist) == 0:
+            self.pop_hist = self.population
+        else:
+            self.pop_hist = np.vstack((self.pop_hist, self.population))
+        plt.clf()
+        plt.scatter(self.pop_hist[:,0], self.pop_hist[:,1])
+        plt.ion()
+        plt.show(block=False)
+        plt.pause(0.01)
