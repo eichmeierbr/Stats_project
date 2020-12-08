@@ -203,7 +203,7 @@ class GA(object):
         a = np.array(self.loss_history)
         for i in range(len(a)):
             for j in range(len(a[0])):
-                a[i,j] = self.params[i].convertValueToParameter(a[i,j])
+                a[i,j,0] = self.params[i].convertValueToParameter(a[i,j,0])
 
         # for i in range(len(a)):
             # a[i] = np.sort(a[i])
