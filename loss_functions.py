@@ -8,7 +8,7 @@ import gym
 
 from stable_baselines.common.policies import MlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
-from stable_baselines import PPO2
+from stable_baselines import PPO2,ACKTR
 import tensorflow as tf
 tf.set_random_seed(1234)
 import time
@@ -29,6 +29,7 @@ def cartPoleLoss(params):
     
     # env.seed(1)
     model = PPO2(MlpPolicy, env, verbose=0)
+    # model = ACKTR(MlpPolicy, env, verbose=0)
     model.n_steps=128
     model.ent_coef = 0.01
     model.learning_rate = params[0].value
@@ -42,7 +43,7 @@ def cartPoleLoss(params):
     # model.n_cpu_tf_sess = 1
 
 
-    model.learn(total_timesteps=2500)
+    model.learn(total_timesteps=6000)
 
     obs = env.reset()
     total_reward = 0

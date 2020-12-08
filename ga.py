@@ -43,8 +43,9 @@ class GA(object):
         self.X_train=np.loadtxt("Xvals.txt")
         self.Y_train=np.loadtxt("Yvals.txt")
         self.clf=clf
-        self.clf.fit(np.array(self.X_train).astype('float'), np.array(self.Y_train).astype('float64').ravel())
+        # self.clf.fit(np.array(self.X_train).astype('float'), np.array(self.Y_train).astype('float64').ravel())
         self.clf_loss=np.Inf
+        
 
         ##Sampler would go here 
         self.range_low = 0
@@ -54,6 +55,7 @@ class GA(object):
 
         # self.population = np.array(lhc.getSamples(self.params, population_size))
         self.population = np.array(lhc.getRawSamples())
+        self.visited_points = self.population
         self.pop_hist = np.array([])
 
         
@@ -86,24 +88,35 @@ class GA(object):
             loss = np.append(loss, curr_loss/avg_num)
 
 
-        Y_predict = loss
+        # Y_predict = loss
         if approximatedLoss:
             # Setup loss storing or training
-            Y_predict = self.clf.predict(np.array(self.population).astype('float'))
+            # Y_predict = self.clf.predict(np.array(self.population).astype('float'))
             self.X_train = np.append(self.population,self.X_train,axis=0)
             self.Y_train = np.append(loss,self.Y_train,axis=0)
             self.clf.fit(np.array(self.X_train).astype('float'), np.array(self.Y_train).astype('float').ravel())
             if True:
-                lr_param = Parameter([0.0, .2])
+                lr_param = Parameter([0.0, 1])
                 maxGradNormParam = Parameter([0, 1])
                 params = [lr_param, maxGradNormParam]
                 number_o_samples = 300
-                temp = Sampler('grid',len(params),number_o_samples)
+                temp = Sampler('lhs',len(params),number_o_samples)
                 X_test = np.array(temp.getSamples(params,numSamples=number_o_samples))
+                self.visited_points = np.append(self.visited_points,self.population,axis=0)
+                X_test = np.append(X_test,self.visited_points,axis=0)
                 Y_test = self.clf.predict(np.array(X_test).astype('float'))
-                Plot_stuff(X_test,Y_test)
 
-        return loss,Y_predict
+                best_genes = []
+                for i in range(self.num_parents):
+                    val = np.argmin(Y_test)
+                    best_genes.append(X_test[val,:])
+                    Y_test[val]=np.Inf
+
+
+                # Plot_stuff(X_test,Y_test)
+
+
+        return loss,np.array(best_genes)
     
 
 
@@ -141,9 +154,9 @@ class GA(object):
                 random_index = np.random.randint(0, offspring_crossover.shape[1], 1)
                 rand = np.random.uniform(0, 1, 1)
                 if rand>.5:
-                    random_val = np.random.uniform(self.range_low, self.parents[0][random_index], 1)
+                    random_val = np.random.uniform(self.range_low, offspring_crossover[offspring,random_index], 1)
                 else:
-                    random_val = np.random.uniform(self.parents[0][random_index], self.range_high, 1)
+                    random_val = np.random.uniform(offspring_crossover[offspring,random_index], self.range_high, 1)
 
                 # random_val = max(0,min(np.random.normal(self.parents[random_index], self.range_high*.5, 1),1))
 
@@ -165,7 +178,7 @@ class GA(object):
         
 
         # if generation>0:
-        loss,Y_predict = self.calculate_loss()
+        loss,clf_best_gene = self.calculate_loss()
         self.store_losses(loss)
     
         if mode == "deterministic":
@@ -176,8 +189,9 @@ class GA(object):
 
         self.best_loss, best_gene =  self.get_best_DNA(loss)
         self.parents , self.loss_o_parents = self.select_parents(loss)
-        self.clf_parent, self.loss_o_clf_parent = self.select_parents(Y_predict)
-        self.parents= np.append(self.parents,self.clf_parent,axis=0)
+        # self.clf_parent, self.loss_o_clf_parent = self.select_parents(Y_predict)
+        self.parents = np.append(self.parents,clf_best_gene,axis=0)
+        # self.parents = clf_best_gene
 
         offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
         self.offspring_mutation = self.mutation(offspring_crossover)
