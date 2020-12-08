@@ -12,20 +12,20 @@ import numpy as np
 # population_size = 10
 # for i in range(population_size): params.append(copy.copy(param))
 
-lr_param = Parameter([0.0, 1])
+lr_param = Parameter([0, 1])
 maxGradNormParam = Parameter([0, 1])
 params = [lr_param, maxGradNormParam]
 
 number_o_samples = 100
 temp = Sampler('lhs',len(params),number_o_samples)
-X_train = np.array(temp.getSamples(params,numSamples=number_o_samples))
+X_train = np.array(temp.getRawSamples())
 
 y = []
 print("")
 for i in range(len(X_train)):
     print(i)
     for j in range(len(params)):
-        params[j].value = X_train[i,j]
+        params[j].setValueFromSample(X_train[i,j])
     y.append(cartPoleLoss(params))
     # y.append(test_loss(params))
 

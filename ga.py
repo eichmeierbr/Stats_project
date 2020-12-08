@@ -72,7 +72,8 @@ class GA(object):
             if self.approx_count == self.approx_rate:
                 self.approx_count = 0
                 # lossFunc = tempLearnerFunc ########### Replace this as desired
-                approximatedLoss = True
+                if self.clf!=None:
+                    approximatedLoss = True
 
 
         avg_num = 1
@@ -89,6 +90,7 @@ class GA(object):
 
 
         # Y_predict = loss
+        best_genes = []
         if approximatedLoss:
             # Setup loss storing or training
             # Y_predict = self.clf.predict(np.array(self.population).astype('float'))
@@ -96,12 +98,10 @@ class GA(object):
             self.Y_train = np.append(loss,self.Y_train,axis=0)
             self.clf.fit(np.array(self.X_train).astype('float'), np.array(self.Y_train).astype('float').ravel())
             if True:
-                lr_param = Parameter([0.0, 1])
-                maxGradNormParam = Parameter([0, 1])
-                params = [lr_param, maxGradNormParam]
+
                 number_o_samples = 300
-                temp = Sampler('lhs',len(params),number_o_samples)
-                X_test = np.array(temp.getSamples(params,numSamples=number_o_samples))
+                temp = Sampler('lhs',len(self.params),number_o_samples)
+                X_test = np.array(temp.getRawSamples())
                 self.visited_points = np.append(self.visited_points,self.population,axis=0)
                 X_test = np.append(X_test,self.visited_points,axis=0)
                 Y_test = self.clf.predict(np.array(X_test).astype('float'))
@@ -190,7 +190,8 @@ class GA(object):
         self.best_loss, best_gene =  self.get_best_DNA(loss)
         self.parents , self.loss_o_parents = self.select_parents(loss)
         # self.clf_parent, self.loss_o_clf_parent = self.select_parents(Y_predict)
-        self.parents = np.append(self.parents,clf_best_gene,axis=0)
+        if self.clf!=None:
+            self.parents = np.append(self.parents,clf_best_gene,axis=0)
         # self.parents = clf_best_gene
 
         offspring_crossover = self.crossover(offspring_size=(self.pop_size[0]-self.parents.shape[0], self.num_params))
