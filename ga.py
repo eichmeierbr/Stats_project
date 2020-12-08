@@ -1,6 +1,8 @@
 import numpy as np
 from sampler import *
 from parameter import *
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def tempLearnerFunc(params):
     return 3
@@ -217,21 +219,27 @@ class GA(object):
 
 
         for i in range(len(a)):
-            fig, ax = plt.subplots()
+            is_log = not self.params[i].linear
+            # fig, ax = plt.subplots()
             # ax.set_aspect("equal")
-            hist, xbins, ybins, im = ax.hist2d(a[i,:,0], a[i,:,1], bins=10)
+            # hist, xbins, ybins, im = ax.hist2d(a[i,:,0], a[i,:,1], bins=10)
             # for k in range(len(ybins)-1):
             #     for j in range(len(xbins)-1):
                     # ax.text(xbins[j]+0.04, ybins[k]+1, hist.T[k,j], 
                             # color="w", ha="center", va="center", fontweight="bold")
-            ax.set_xlabel('Parameter Value')
-            ax.set_ylabel('Loss')
-            plt.show()
+            # ax.set_xlabel('Parameter Value')
+            # ax.set_ylabel('Loss')
+            # plt.show()
 
             # plt.scatter(a[i,:,0], a[i,:,1])
-            plt.hist(a[i,:,0])
-            plt.xlabel('Parameter Value')
-            plt.ylabel('Count')
+            # n, bins, _ = plt.hist(a[i,:,0])
+            # y,binEdges=np.histogram(a[i,:,0],bins=10)
+            # bincenters = 0.5*(binEdges[1:]+binEdges[:-1])
+            sns.displot(a[i,:,0], kind="kde", clip=self.params[i].options)
+            # sns.displot(a[i,:,0], kind="kde", clip=self.params[i].options, log_scale=is_log)
+            # plt.plot(bincenters,y,'-')
+            # plt.xlabel('Parameter Value')
+            # plt.ylabel('Count')
 
             plt.show()
 

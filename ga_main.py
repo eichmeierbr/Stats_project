@@ -7,7 +7,7 @@ from loss_functions import*
 ######### test initial population here #########
 # param = Parameter([0,100])
 # params = []
-# 
+#
 # num_generations = 100
 # population_size = 10
 # for i in range(population_size): params.append(copy.copy(param))
