@@ -15,20 +15,23 @@ class Parameter:
 
   
     def convertValueToParameter(self, sample):
+        sample = max(sample, 1e-6)
+        sample = min(sample, 1)
+
         if self.categorical:
             sample *= self.samples
-            return self.options[int(sample)]
+            val = self.options[int(sample)]
 
-        if self.linear:
+        elif self.linear:
             minVal = self.options[0]
             maxVal = self.options[1]
             val = minVal + sample * (maxVal-minVal)
-            return val
         else:
             minVal = np.log(self.options[0])
             maxVal = np.log(self.options[1])
             val = np.exp(minVal + sample * (maxVal-minVal))
-            return val
+
+        return val
 
     def setValueFromSample(self,sample):
         self.value = self.convertValueToParameter(sample)

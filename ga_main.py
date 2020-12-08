@@ -39,8 +39,8 @@ from loss_functions import*
 
 
 ##########Test GA cartpole
-lr_param = Parameter([0, 0.1])
-maxGradNormParam = Parameter([0.3, 0.7])
+lr_param = Parameter([1e-4, 1], lin=False)
+maxGradNormParam = Parameter([0, 1])
 params = [lr_param, maxGradNormParam]
 
 num_generations = 20
