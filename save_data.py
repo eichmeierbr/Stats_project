@@ -12,8 +12,8 @@ import numpy as np
 # population_size = 10
 # for i in range(population_size): params.append(copy.copy(param))
 
-lr_param = Parameter([0, 1])
-maxGradNormParam = Parameter([0, 1])
+lr_param = Parameter([0.000001, 1])
+maxGradNormParam = Parameter([0.000001, 1])
 params = [lr_param, maxGradNormParam]
 
 number_o_samples = 100

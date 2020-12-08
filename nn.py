@@ -49,7 +49,7 @@ for i in range(1,9):
     clf.fit(np.array(X_train).astype('float'), np.array(Y_train).astype('float64').ravel())
     Y_test = clf.predict(np.array(X_test).astype('float'))
     Y_test = np.array(Y_test)
-    Plot_stuff(X_train,Y_train,X_test,Y_test)
+Plot_stuff(X_train,Y_train,X_test,Y_test)
 
 # clf = MLPClassifier(hidden_layer_sizes=(100,100),activation='relu', max_iter=1, alpha=20,
 #                      solver='lbfgs', learning_rate='adaptive', verbose=1,  random_state=9)

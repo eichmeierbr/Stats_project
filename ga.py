@@ -254,12 +254,20 @@ class GA(object):
     def plotTrainingHistograms(self):
         # Plot Histograms
         a = np.array(self.loss_history)
+        thresh = 100
+        all_vals = []
+        for i in range(a.shape[0]):
+            vals = list(a[i])
+            for j in reversed(range(len(vals))):
+                if vals[j][1] > thresh:
+                    vals.pop(j)
+            all_vals.append(vals)
+        
+        a = np.array(all_vals)
         for i in range(len(a)):
             for j in range(len(a[0])):
-                a[i,j] = self.params[i].convertValueToParameter(a[i,j])
+                a[i,j,0] = self.params[i].convertValueToParameter(a[i,j,0])
 
-        # for i in range(len(a)):
-            # a[i] = np.sort(a[i])
 
         for i in range(len(a)):
             fig, ax = plt.subplots()
@@ -273,9 +281,10 @@ class GA(object):
             ax.set_ylabel('Loss')
             plt.show()
 
-            plt.scatter(a[i,:,0], a[i,:,1])
+            # plt.scatter(a[i,:,0], a[i,:,1])
+            plt.hist(a[i,:,0])
             plt.xlabel('Parameter Value')
-            plt.ylabel('Loss')
+            plt.ylabel('Count')
 
             plt.show()
 
