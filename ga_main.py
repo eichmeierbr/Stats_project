@@ -5,16 +5,16 @@ from loss_functions import*
 
 
 ######### test initial population here #########
-param = Parameter([0,100])
-params = []
-# 
-num_generations = 100
-population_size = 10
-for i in range(population_size): params.append(copy.copy(param))
-num_parents = 4
-num_mutations = 1
-GA_agent = GA(population_size,params,num_parents,num_mutations, test_loss, approx_rate=5)
-best = GA_agent.Big_Funct(num_generations, show_stats=True)
+# param = Parameter([0,100])
+# params = []
+
+# num_generations = 100
+# population_size = 10
+# for i in range(population_size): params.append(copy.copy(param))
+# num_parents = 4
+# num_mutations = 1
+# GA_agent = GA(population_size,params,num_parents,num_mutations, test_loss, approx_rate=0, method='lhc')
+# best = GA_agent.Big_Funct(num_generations, show_stats=True)
 
 
 ##########Test GA cartpole
@@ -39,13 +39,13 @@ best = GA_agent.Big_Funct(num_generations, show_stats=True)
 
 
 ##########Test GA cartpole
-# lr_param = Parameter([0.0, 1])
-# maxGradNormParam = Parameter([0, 1])
-# params = [lr_param, maxGradNormParam]
-# 
-# num_generations = 20
-# population_size = 10
-# num_parents = 4
-# num_mutations = 1
-# GA_agent = GA(population_size,params,num_parents,num_mutations, cartPoleLoss, approx_rate=3)
-# best = GA_agent.Big_Funct(num_generations, show_stats=True)
+lr_param = Parameter([0, 0.1])
+maxGradNormParam = Parameter([0.3, 0.7])
+params = [lr_param, maxGradNormParam]
+
+num_generations = 20
+population_size = 10
+num_parents = 4
+num_mutations = 1
+GA_agent = GA(population_size,params,num_parents,num_mutations, cartPoleLoss, approx_rate=0, method='grid')
+best = GA_agent.Big_Funct(num_generations, show_stats=True)

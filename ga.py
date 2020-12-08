@@ -10,7 +10,7 @@ def tempTrainApproximator(X, Y):
 
 
 class GA(object):
-    def __init__(self,population_size, parameters,num_parents,num_mutations, loss_func, approx_rate=0):
+    def __init__(self,population_size, parameters,num_parents,num_mutations, loss_func, approx_rate=0, method='grid'):
         self.num_params = len(parameters)
         self.pop_size = (population_size,self.num_params)
         self.num_parents = num_parents
@@ -29,7 +29,7 @@ class GA(object):
         self.range_low = 0
         self.range_high = 1    
         self.params = parameters
-        lhc = Sampler('grid', self.num_params, population_size)
+        lhc = Sampler(method, self.num_params, population_size)
 
         # self.population = np.array(lhc.getSamples(self.params, population_size))
         self.population = np.array(lhc.getRawSamples())
@@ -194,7 +194,7 @@ class GA(object):
         plt.plot(best_outputs)
         plt.xlabel("Generation")
         plt.ylabel("Loss")
-        plt.title("Cart Pole (random sampling)")
+        plt.title("Number Guessing (LHC Sampling)")
         plt.show()        
 
 
@@ -211,13 +211,13 @@ class GA(object):
         for i in range(len(a)):
             fig, ax = plt.subplots()
             # ax.set_aspect("equal")
-            hist, xbins, ybins, im = ax.hist2d(a[i,:,0], a[i,:,1], bins=20)
+            hist, xbins, ybins, im = ax.hist2d(a[i,:,0], a[i,:,1], bins=10)
             # for k in range(len(ybins)-1):
-                # for j in range(len(xbins)-1):
+            #     for j in range(len(xbins)-1):
                     # ax.text(xbins[j]+0.04, ybins[k]+1, hist.T[k,j], 
                             # color="w", ha="center", va="center", fontweight="bold")
-            # ax.xlabel('Parameter Value')
-            # ax.ylabel('Loss')
+            ax.set_xlabel('Parameter Value')
+            ax.set_ylabel('Loss')
             plt.show()
 
             plt.scatter(a[i,:,0], a[i,:,1])
