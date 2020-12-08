@@ -2,19 +2,19 @@ import numpy
 import copy
 from ga import*
 from loss_functions import*
-
+from sklearn.neural_network import MLPClassifier,MLPRegressor
 
 ######### test initial population here #########
-param = Parameter([0,100])
-params = []
-# 
-num_generations = 100
-population_size = 10
-for i in range(population_size): params.append(copy.copy(param))
-num_parents = 4
-num_mutations = 1
-GA_agent = GA(population_size,params,num_parents,num_mutations, test_loss)
-best = GA_agent.Big_Funct(num_generations, show_stats=True)
+# param = Parameter([0,100])
+# params = []
+
+# num_generations = 100
+# population_size = 10
+# for i in range(population_size): params.append(copy.copy(param))
+# num_parents = 4
+# num_mutations = 1
+# GA_agent = GA(population_size,params,num_parents,num_mutations, test_loss, approx_rate=0, method='lhc')
+# best = GA_agent.Big_Funct(num_generations, show_stats=True)
 
 
 ##########Test GA cartpole
@@ -39,13 +39,17 @@ best = GA_agent.Big_Funct(num_generations, show_stats=True)
 
 
 ##########Test GA cartpole
-# lr_param = Parameter([0.0, 1])
-# maxGradNormParam = Parameter([0, 1])
-# params = [lr_param, maxGradNormParam]
-# 
-# num_generations = 20
-# population_size = 10
-# num_parents = 4
-# num_mutations = 1
-# GA_agent = GA(population_size,params,num_parents,num_mutations, cartPoleLoss)
-# best = GA_agent.Big_Funct(num_generations, show_stats=True)
+lr_param = Parameter([0, 1])
+maxGradNormParam = Parameter([0, 1])
+params = [lr_param, maxGradNormParam]
+
+num_generations = 20
+population_size = 8
+num_parents = 2
+num_mutations = 1
+
+clf = MLPRegressor(hidden_layer_sizes=(100,100),activation='relu',tol=.1, alpha=2,
+                        solver='lbfgs', learning_rate='adaptive', verbose=1,  random_state=9)
+
+GA_agent = GA(population_size,params,num_parents,num_mutations, cartPoleLoss, approx_rate=1, method='grid',clf=clf)
+best = GA_agent.Big_Funct(num_generations, show_stats=True)
