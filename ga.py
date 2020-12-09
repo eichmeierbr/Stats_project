@@ -116,7 +116,7 @@ class GA(object):
                     Y_test[val]=np.Inf
 
                 s = len(self.Y_train)-100
-                Plot_stuff(self.X_train[:s,:],self.Y_train[:s])
+                # Plot_stuff(self.X_train[:s,:],self.Y_train[:s])
 
 
         return loss,np.array(best_genes)
