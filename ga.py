@@ -31,11 +31,18 @@ class GA(object):
         self.range_low = 0
         self.range_high = 1    
         self.params = parameters
-        lhc = Sampler(method, self.num_params, population_size)
+        self.method = method
+        self.lhc = Sampler(method, self.num_params, population_size)
 
         # self.population = np.array(lhc.getSamples(self.params, population_size))
-        self.population = np.array(lhc.getRawSamples())
+        self.population = np.array(self.lhc.getRawSamples())
         self.pop_hist = np.array([])
+
+    def reset(self):
+        self.loss_history = []
+        self.population = np.array(self.lhc.getRawSamples())
+        self.pop_hist = np.array([])
+
 
     ##THIS function will interact will get loss from leaner
     def calculate_loss(self):
@@ -165,7 +172,7 @@ class GA(object):
             self.loss_history.append([vals, loss])
 
 
-    def Big_Funct(self, num_generations=20, show_stats=False):
+    def Big_Funct(self, num_generations=20, show_stats=False, return_losses=False):
         best_outputs = []
         self.loss_history = []
         for generation in range(num_generations):
@@ -186,21 +193,25 @@ class GA(object):
         if show_stats:
             self.plotLossCurve(best_outputs)
             self.plotTrainingHistograms()
-        return self.params
+        if return_losses:
+            return self.params, self.loss_history
+        else:
+            return self.params
 
 
     def plotLossCurve(self, best_outputs):
+        methodsDict = {'random':'Random', 'lhc':'Latin Hypercube','grid':'Uniform'}
         plt.plot(best_outputs)
         plt.xlabel("Generation")
         plt.ylabel("Loss")
-        plt.title("Number Guessing (LHC Sampling)")
+        plt.title("Number Guessing (%s Sampling)" %(methodsDict[self.method]))
         plt.show()        
 
 
     def plotTrainingHistograms(self):
         # Plot Histograms
         a = self.loss_history[:]
-        thresh = 780
+        thresh = 100
         for j in reversed(range(len(a))):
             if a[j][1] > thresh:
                 a.pop(j)
@@ -226,7 +237,8 @@ class GA(object):
                 if not self.params[i].name==None:
                     plt.title('%s Distribution' %(self.params[i].name))
             else:    
-                sns.displot(param_vals, kind="kde", clip=self.params[i].options, log_scale=is_log)
+                ax = sns.displot(param_vals, kind="kde", clip=self.params[i].options, log_scale=is_log)
+                plt.xlabel('Values')
                 if not self.params[i].name==None:
                     plt.title('%s Distribution' %(self.params[i].name))
 
