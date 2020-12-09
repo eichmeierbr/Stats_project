@@ -7,7 +7,7 @@ from sklearn.neural_network import MLPClassifier,MLPRegressor
 ######### test initial population here #########
 # param = Parameter([0,100])
 # params = []
-# 
+#
 # num_generations = 100
 # population_size = 10
 # for i in range(population_size): params.append(copy.copy(param))
@@ -43,7 +43,7 @@ lr_param = Parameter([0.000001, 1])
 maxGradNormParam = Parameter([0.000001, 1])
 params = [lr_param, maxGradNormParam]
 
-num_generations = 30
+num_generations = 50
 population_size = 8
 num_parents = 2
 num_mutations = 1
