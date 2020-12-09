@@ -43,7 +43,7 @@ lr_param = Parameter([0.000001, 1])
 maxGradNormParam = Parameter([0.000001, 1])
 params = [lr_param, maxGradNormParam]
 
-num_generations = 50
+num_generations = 12
 population_size = 8
 num_parents = 2
 num_mutations = 1
