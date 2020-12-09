@@ -5,11 +5,14 @@ import cv2
 # sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages') 
 import gym
 
-from stable_baselines.common.policies import MlpPolicy
-from stable_baselines.common.vec_env import DummyVecEnv
-from stable_baselines import PPO2
-import tensorflow as tf
-tf.set_random_seed(1234)
+from sklearn.neural_network import MLPClassifier,MLPRegressor
+from sklearn import datasets
+
+# from stable_baselines.common.policies import MlpPolicy
+# from stable_baselines.common.vec_env import DummyVecEnv
+# from stable_baselines import PPO2
+# import tensorflow as tf
+# tf.set_random_seed(1234)
 import time
 from ga import*
 
@@ -73,4 +76,36 @@ def test_loss(params):
     arr = np.array([1,10,20,30,40,50,60,70,80,90])
     val = np.array(vals)-arr
     loss = np.linalg.norm(val)
+    return loss
+
+
+
+def neuralNetLoss(params):
+    act_func = params[0].value
+    num_layers = params[1].value
+    nodes = params[2].value
+    momentum = params[3].value
+
+    layers = []
+    for i in range(num_layers):
+        layers.append(nodes)
+
+    clf = MLPRegressor(hidden_layer_sizes=layers,activation=act_func, max_iter=200, alpha=0.001,
+                     solver='sgd', learning_rate='adaptive', verbose=0,  momentum=momentum, random_state=9)
+
+    data = datasets.load_diabetes()
+    x = data.data
+    y = data.target
+
+    indices = np.arange(len(x))
+    np.random.shuffle(indices)
+    x = x[indices]
+    y = y[indices]
+    splitter = int(len(indices)*0.75)
+    x_train, x_test = x[:splitter], x[splitter:]
+    y_train, y_test = y[:splitter], y[splitter:]
+    clf.fit(x_train, y_train)
+
+    vals = clf.predict(x_test)
+    loss = np.linalg.norm(vals-y_test)
     return loss
