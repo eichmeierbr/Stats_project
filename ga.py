@@ -4,12 +4,6 @@ from parameter import *
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def tempLearnerFunc(params):
-    return 3
-
-def tempTrainApproximator(X, Y):
-    return
-
 
 class GA(object):
     def __init__(self,population_size, parameters,num_parents,num_mutations, loss_func, approx_rate=0, method='grid'):
@@ -70,13 +64,7 @@ class GA(object):
             for k in range(avg_num):
                 curr_loss += lossFunc(params)
             loss = np.append(loss, curr_loss/avg_num)
-
-        if approximatedLoss:
-            # Setup loss storing or training
-            X = self.population
-            Y = loss
-            tempTrainApproximator(X, Y)
-
+            
         return loss
     
 
@@ -134,19 +122,13 @@ class GA(object):
         return best_loss, best_gene
 
     def get_next_gen(self,generation, mode = "non-deterministic"):
-        # print(self.parents)
-        # print(self.population)
-        
 
-        # if generation>0:
         loss = self.calculate_loss()
         self.store_losses(loss)
     
-        if mode == "deterministic":
-
-            if generation>0:
-                loss = np.append(loss,self.loss_o_parents,axis=0)
-                self.population = np.append(self.population,self.parents,axis=0)
+        if mode == "deterministic" and generation > 0:
+            loss = np.append(loss,self.loss_o_parents,axis=0)
+            self.population = np.append(self.population,self.parents,axis=0)
 
         self.best_loss, best_gene =  self.get_best_DNA(loss)
         self.parents , self.loss_o_parents = self.select_parents(loss)
