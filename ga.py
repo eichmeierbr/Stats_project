@@ -54,14 +54,19 @@ class GA(object):
         self.range_low = 0
         self.range_high = 1    
         self.params = parameters
-        lhc = Sampler(method, self.num_params, population_size)
+        self.method = method
+        self.lhc = Sampler(method, self.num_params, population_size)
 
         # self.population = np.array(lhc.getSamples(self.params, population_size))
         self.population = np.array(lhc.getRawSamples())
         self.visited_points = self.population
         self.pop_hist = np.array([])
 
-        
+    def reset(self):
+        self.loss_history = []
+        self.population = np.array(self.lhc.getRawSamples())
+        self.pop_hist = np.array([])
+
 
     ##THIS function will interact will get loss from leaner
     def calculate_loss(self):
@@ -212,17 +217,14 @@ class GA(object):
 
 
     def store_losses(self, losses):
-        for loss in losses:
-            for sample in self.population:
-                if len(self.loss_history) == 0: 
-                    for val in sample:
-                        self.loss_history.append([[val, loss]])
-                else:
-                    for i in range(len(sample)):
-                        self.loss_history[i].append([sample[i], loss])
+        for loss, sample in zip(losses, self.population):
+            vals = []
+            for i in range(len(self.params)):
+                vals.append(self.params[i].convertValueToParameter(sample[i]))
+            self.loss_history.append([vals, loss])
 
 
-    def Big_Funct(self, num_generations=20, show_stats=False):
+    def Big_Funct(self, num_generations=20, show_stats=False, return_losses=False):
         best_outputs = []
         self.loss_history = []
         for generation in range(num_generations):
@@ -243,57 +245,55 @@ class GA(object):
         if show_stats:
             self.plotLossCurve(best_outputs)
             self.plotTrainingHistograms()
-        return self.params
+        if return_losses:
+            return self.params, self.loss_history
+        else:
+            return self.params
 
 
     def plotLossCurve(self, best_outputs):
+        methodsDict = {'random':'Random', 'lhc':'Latin Hypercube','grid':'Uniform'}
         plt.plot(best_outputs)
         plt.xlabel("Generation")
         plt.ylabel("Loss")
-        plt.title("Number Guessing (LHC Sampling)")
+        plt.title("Number Guessing (%s Sampling)" %(methodsDict[self.method]))
         plt.show()        
 
 
     def plotTrainingHistograms(self):
         # Plot Histograms
-        a = np.array(self.loss_history)
+        a = self.loss_history[:]
         thresh = 100
-        all_vals = []
-        for i in range(a.shape[0]):
-            vals = list(a[i])
-            for j in reversed(range(len(vals))):
-                if vals[j][1] > thresh:
-                    vals.pop(j)
-            all_vals.append(vals)
-        
-        a = np.array(all_vals)
-        for i in range(len(a)):
-            for j in range(len(a[0])):
-                a[i,j,0] = self.params[i].convertValueToParameter(a[i,j,0])
+        for j in reversed(range(len(a))):
+            if a[j][1] > thresh:
+                a.pop(j)
 
-
-        for i in range(len(a)):
+        for i in range(len(self.params)):
+            param_vals = []
+            for v in a:
+                param_vals.append(v[0][i])
             is_log = not self.params[i].linear
+
             # fig, ax = plt.subplots()
-            # ax.set_aspect("equal")
-            # hist, xbins, ybins, im = ax.hist2d(a[i,:,0], a[i,:,1], bins=10)
-            # for k in range(len(ybins)-1):
-            #     for j in range(len(xbins)-1):
-                    # ax.text(xbins[j]+0.04, ybins[k]+1, hist.T[k,j], 
-                            # color="w", ha="center", va="center", fontweight="bold")
+            # hist, xbins, ybins, im = ax.hist2d(a[:,0,i], a[:,1,i], bins=10)
             # ax.set_xlabel('Parameter Value')
             # ax.set_ylabel('Loss')
             # plt.show()
 
-            # plt.scatter(a[i,:,0], a[i,:,1])
-            # n, bins, _ = plt.hist(a[i,:,0])
-            # y,binEdges=np.histogram(a[i,:,0],bins=10)
-            # bincenters = 0.5*(binEdges[1:]+binEdges[:-1])
-            sns.displot(a[i,:,0], kind="kde", clip=self.params[i].options)
-            # sns.displot(a[i,:,0], kind="kde", clip=self.params[i].options, log_scale=is_log)
-            # plt.plot(bincenters,y,'-')
+            # plt.scatter(a[:,0,i], a[:,1,i])
             # plt.xlabel('Parameter Value')
             # plt.ylabel('Count')
+ 
+            if self.params[i].categorical:
+                ax = sns.countplot(x=param_vals)
+                if not self.params[i].name==None:
+                    plt.title('%s Distribution' %(self.params[i].name))
+            else:    
+                ax = sns.displot(param_vals, kind="kde", clip=self.params[i].options, log_scale=is_log)
+                plt.xlabel('Values')
+                if not self.params[i].name==None:
+                    plt.title('%s Distribution' %(self.params[i].name))
+
 
             plt.show()
 

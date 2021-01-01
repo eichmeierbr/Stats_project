@@ -3,67 +3,68 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from scipy.spatial import Voronoi, voronoi_plot_2d, ConvexHull
-from scipy import stats
-from sklearn.cluster import KMeans
+# from mpl_toolkits.mplot3d import Axes3D
+# # from scipy.spatial import Voronoi, voronoi_plot_2d, ConvexHull
+# # from scipy import stats
+# # from sklearn.cluster import KMeans
+# import itertools
 from sampler import *
-import itertools
+from ga import*
+from loss_functions import*
+import seaborn as sns
 
 
-def voronoi_volumes(points, v):
-    vol = np.zeros(v.npoints)
-    for i, reg_num in enumerate(v.point_region):
-        indices = v.regions[reg_num]
-        if -1 in indices: # some regions can be opened
-            vol[i] = np.inf
-        else:
-            vol[i] = ConvexHull(v.vertices[indices]).volume
-    return vol
+def getSampleLoss(params, lossFunc):
+    vals = np.random.uniform(0,1,size=len(params))
+    for i in range(len(vals)):
+        params[i].setValueFromSample(vals[i])
+    loss = lossFunc(params)
+    return loss
+
 
 
 if __name__ == "__main__":
 
-    methods = ['random','lhs','grid']
-    methodsDict = {'random':'Random', 'lhs':'Latin Hypercube','grid':'Uniform'}
-    samps = [5,12,25]
-    n_pts =10
-    n_dims = 2
-    sim_pts = 12000
-    lhc = Sampler(params=n_dims, samples=n_pts)
+    # methods = ['random','lhs','grid']
+    # methodsDict = {'random':'Random', 'lhs':'Latin Hypercube','grid':'Uniform'}
+    # samps = [5,12,25]
+    # n_pts =10
+    # n_dims = 2
+    # sim_pts = 12000
+    # lhc = Sampler(params=n_dims, samples=n_pts)
 
-    fig, axs = plt.subplots(3,3)
-    fontweight = 22
-    plt.rcParams.update({'font.size': fontweight})
+    # fig, axs = plt.subplots(3,3)
+    # fontweight = 22
+    # plt.rcParams.update({'font.size': fontweight})
 
-    for i in range(len(samps)):
-        num = samps[i]
-        for j in range(len(methods)):
-            plt.rcParams.update({'font.size': 22})
+    # for i in range(len(samps)):
+    #     num = samps[i]
+    #     for j in range(len(methods)):
+    #         plt.rcParams.update({'font.size': 22})
 
-            meth = methods[j]
-            lhc.num_samples = num
-            lhc.method = meth
-            lhd = lhc.getRawSamples()
-            xs = lhd[:,0]
-            ys = lhd[:,1]
+    #         meth = methods[j]
+    #         lhc.num_samples = num
+    #         lhc.method = meth
+    #         lhd = lhc.getRawSamples()
+    #         xs = lhd[:,0]
+    #         ys = lhd[:,1]
     
-            if i==0:
-                # axs[i,j].set_title('Num Samples %i' %(num))
-                axs[i,j].set_title(methodsDict[meth])
-            if j==0:
-                axs[i,j].set_ylabel('%i' %(num), fontsize=22)
-            axs[i,j].set_xticks([])
-            axs[i,j].set_xticklabels([])
-            axs[i,j].set_yticks([])
-            axs[i,j].set_yticklabels([])
-            axs[i,j].scatter(xs, ys)
+    #         if i==0:
+    #             # axs[i,j].set_title('Num Samples %i' %(num))
+    #             axs[i,j].set_title(methodsDict[meth])
+    #         if j==0:
+    #             axs[i,j].set_ylabel('%i' %(num), fontsize=22)
+    #         axs[i,j].set_xticks([])
+    #         axs[i,j].set_xticklabels([])
+    #         axs[i,j].set_yticks([])
+    #         axs[i,j].set_yticklabels([])
+    #         axs[i,j].scatter(xs, ys)
 
 
-    plt.rcParams.update({'font.weight': 'bold'})
-    fig.suptitle('Sampling Comparison', fontweight='bold')
-    fig.text(0.04, 0.5, 'Number of Samples', va='center', rotation='vertical')
-    plt.show()
+    # plt.rcParams.update({'font.weight': 'bold'})
+    # fig.suptitle('Sampling Comparison', fontweight='bold')
+    # fig.text(0.04, 0.5, 'Number of Samples', va='center', rotation='vertical')
+    # plt.show()
 
 
     # ls = []
@@ -110,43 +111,95 @@ if __name__ == "__main__":
     # b = 3
 
 
-methods = ['random','lhs','grid']
-methodsDict = {'random':'Random', 'lhs':'Latin Hypercube','grid':'Uniform'}
-samps = [5,12,25]
-n_pts =10
-n_dims = 2
-sim_pts = 12000
-lhc = Sampler(params=n_dims, samples=n_pts)
+# methods = ['random','lhs','grid']
+# methodsDict = {'random':'Random', 'lhs':'Latin Hypercube','grid':'Uniform'}
+# samps = [5,12,25]
+# n_pts =10
+# n_dims = 2
+# sim_pts = 12000
+# lhc = Sampler(params=n_dims, samples=n_pts)
 
-fig, axs = plt.subplots(3,3)
-fontweight = 22
-plt.rcParams.update({'font.size': fontweight})
+# fig, axs = plt.subplots(3,3)
+# fontweight = 22
+# plt.rcParams.update({'font.size': fontweight})
 
-for i in range(len(samps)):
-    num = samps[i]
-    for j in range(len(methods)):
-        plt.rcParams.update({'font.size': 22})
+# for i in range(len(samps)):
+#     num = samps[i]
+#     for j in range(len(methods)):
+#         plt.rcParams.update({'font.size': 22})
 
-        meth = methods[j]
-        lhc.num_samples = num
-        lhc.method = meth
-        lhd = lhc.getRawSamples()
-        xs = lhd[:,0]
-        ys = lhd[:,1]
+#         meth = methods[j]
+#         lhc.num_samples = num
+#         lhc.method = meth
+#         lhd = lhc.getRawSamples()
+#         xs = lhd[:,0]
+#         ys = lhd[:,1]
 
-        if i==0:
-            # axs[i,j].set_title('Num Samples %i' %(num))
-            axs[i,j].set_title(methodsDict[meth])
-        if j==0:
-            axs[i,j].set_ylabel('%i' %(num), fontsize=22)
-        axs[i,j].set_xticks([])
-        axs[i,j].set_xticklabels([])
-        axs[i,j].set_yticks([])
-        axs[i,j].set_yticklabels([])
-        axs[i,j].scatter(xs, ys)
+#         if i==0:
+#             # axs[i,j].set_title('Num Samples %i' %(num))
+#             axs[i,j].set_title(methodsDict[meth])
+#         if j==0:
+#             axs[i,j].set_ylabel('%i' %(num), fontsize=22)
+#         axs[i,j].set_xticks([])
+#         axs[i,j].set_xticklabels([])
+#         axs[i,j].set_yticks([])
+#         axs[i,j].set_yticklabels([])
+#         axs[i,j].scatter(xs, ys)
 
 
-plt.rcParams.update({'font.weight': 'bold'})
-fig.suptitle('Sampling Comparison', fontweight='bold')
-fig.text(0.04, 0.5, 'Number of Samples', va='center', rotation='vertical')
-plt.show()
+# plt.rcParams.update({'font.weight': 'bold'})
+# fig.suptitle('Sampling Comparison', fontweight='bold')
+# fig.text(0.04, 0.5, 'Number of Samples', va='center', rotation='vertical')
+# plt.show()
+
+
+    lossFunc = test_loss
+    vals = [1,10,20,30,40,50,60,70,80,90]
+    # param = Parameter(vals, categ=True)
+    param = Parameter([0, 100])
+    params = []
+    lossThresh = 10
+
+    num_generations = 100
+    population_size = 10
+    for i in range(population_size): 
+        param.name= str(vals[i])
+        params.append(copy.copy(param))
+    num_parents = 4
+    num_mutations = 1
+
+
+    all_vals = {}
+    iters = 100
+    methodsDict = {'random':'Random', 'lhs':'Latin Hypercube', 'grid':'Uniform','ran':'Full Random'}
+    # methodsDict = {'ran':'Full Random'}
+    for meth, v in methodsDict.items():
+
+        vals = []
+        if meth == 'ran':
+            pass
+        #     for i in range(iters):
+        #         for j in range(1000):
+        #             loss = getSampleLoss(params,lossFunc)
+        #             if loss < 40: print(loss)
+        #             if loss < lossThresh:
+        #                 vals.append(j)
+        #                 break
+        else:
+            GA_agent = GA(population_size,params,num_parents,num_mutations, lossFunc, approx_rate=0, method=meth)
+            for i in range(iters):
+                print('Evaluating Iter: %i/%i' %(i,iters))
+                GA_agent.reset()
+                best, losses = GA_agent.Big_Funct(num_generations, show_stats=False, return_losses=True)
+                idx = -1
+                for gen in losses:
+                    idx +=1
+                    if gen[1] < lossThresh: 
+                        break
+                vals.append(idx)
+
+        all_vals[v] = vals
+    ax = sns.displot(all_vals, kind="kde", clip=[0,num_generations*population_size])
+    plt.xlabel('Iterations Until Convergence')
+    plt.title('Sampling Success Distributions')
+    plt.show()

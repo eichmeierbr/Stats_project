@@ -17,15 +17,15 @@ class Sampler:
         self.params = []
 
     def getSamplesLHS(self, criterion='m'): # Other options = c, cm, corr
-        print("lhs")
+        # print("lhs")
         return lhs(self.num_params, self.num_samples, criterion=criterion)
 
     def getSamplesRandom(self):
-        print("random")
+        # print("random")
         return np.random.uniform(0,1, (self.num_samples, self.num_params))
 
     def getSamplesGrid(self):
-        print("grid")
+        # print("grid")
         n_pts = self.num_samples
         n_dims = self.num_params
         sim_pts = 12000
