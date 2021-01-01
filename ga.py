@@ -5,7 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
-matplotlib.use('TkAgg') 
+# matplotlib.use('TkAgg') 
 
 # sns.displot([1,1], kind="kde")
 
@@ -58,7 +58,7 @@ class GA(object):
         self.lhc = Sampler(method, self.num_params, population_size)
 
         # self.population = np.array(lhc.getSamples(self.params, population_size))
-        self.population = np.array(lhc.getRawSamples())
+        self.population = np.array(self.lhc.getRawSamples())
         self.visited_points = self.population
         self.pop_hist = np.array([])
 

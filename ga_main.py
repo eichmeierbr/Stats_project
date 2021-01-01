@@ -43,20 +43,20 @@ best = GA_agent.Big_Funct(num_generations, show_stats=True)
 
 
 ##########Test GA cartpole
-lr_param = Parameter([0.000001, 1])
-maxGradNormParam = Parameter([0.000001, 1])
-params = [lr_param, maxGradNormParam]
+# lr_param = Parameter([0.000001, 1])
+# maxGradNormParam = Parameter([0.000001, 1])
+# params = [lr_param, maxGradNormParam]
 
-num_generations = 12
-population_size = 8
-num_parents = 2
-num_mutations = 1
+# num_generations = 12
+# population_size = 8
+# num_parents = 2
+# num_mutations = 1
 
-clf = MLPRegressor(hidden_layer_sizes=(100,100),activation='relu',tol=.1, alpha=0.2,
-                        solver='lbfgs', learning_rate='adaptive', verbose=0,  random_state=9)
+# clf = MLPRegressor(hidden_layer_sizes=(100,100),activation='relu',tol=.1, alpha=0.2,
+#                         solver='lbfgs', learning_rate='adaptive', verbose=0,  random_state=9)
 
-GA_agent = GA(population_size,params,num_parents,num_mutations, cartPoleLoss, approx_rate=1, method='grid',clf=clf)
-best = GA_agent.Big_Funct(num_generations, show_stats=True)
+# GA_agent = GA(population_size,params,num_parents,num_mutations, cartPoleLoss, approx_rate=1, method='grid',clf=clf)
+# best = GA_agent.Big_Funct(num_generations, show_stats=True)
 
 
 
