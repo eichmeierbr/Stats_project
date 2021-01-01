@@ -64,7 +64,7 @@ class GA(object):
             for k in range(avg_num):
                 curr_loss += lossFunc(params)
             loss = np.append(loss, curr_loss/avg_num)
-            
+
         return loss
     
 
@@ -154,7 +154,7 @@ class GA(object):
             self.loss_history.append([vals, loss])
 
 
-    def Big_Funct(self, num_generations=20, show_stats=False, return_losses=False):
+    def optimize_params(self, num_generations=20, show_stats=False, return_losses=False):
         best_outputs = []
         self.loss_history = []
         for generation in range(num_generations):
